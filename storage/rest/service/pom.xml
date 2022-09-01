@@ -21,6 +21,16 @@
 	<dependencies>
 		<dependency>
 			<groupId>one.microstream</groupId>
+			<artifactId>microstream-base</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-storage</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
 			<artifactId>microstream-storage-restadapter</artifactId>
 			<version>08.00.00-MS-GA-SNAPSHOT</version>
 		</dependency>

@@ -27,28 +27,38 @@
 	<dependencies>
 		<dependency>
 			<groupId>one.microstream</groupId>
+			<artifactId>microstream-base</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-persistence</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-persistence-binary</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-storage-restadapter</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
 			<artifactId>microstream-storage-restclient</artifactId>
 			<version>08.00.00-MS-GA-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.inject</groupId>
-			<artifactId>jersey-hk2</artifactId>
-			<version>${jersey.version}</version>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+			<version>2.1.6</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>${gson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>${jaxb.version}</version>
 		</dependency>
 	</dependencies>
 

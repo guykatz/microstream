@@ -21,12 +21,32 @@
 	<dependencies>
 		<dependency>
 			<groupId>one.microstream</groupId>
-			<artifactId>microstream-storage-embedded</artifactId>
+			<artifactId>microstream-afs</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-afs-nio</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-base</artifactId>
 			<version>08.00.00-MS-GA-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>one.microstream</groupId>
 			<artifactId>microstream-configuration</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-storage</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-storage-embedded</artifactId>
 			<version>08.00.00-MS-GA-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

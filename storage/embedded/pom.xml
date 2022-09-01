@@ -24,6 +24,35 @@
 			<artifactId>microstream-storage</artifactId>
 			<version>08.00.00-MS-GA-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-persistence</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-persistence-binary</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-base</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-afs</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>one.microstream</groupId>
+			<artifactId>microstream-afs-nio</artifactId>
+			<version>08.00.00-MS-GA-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 </project>
