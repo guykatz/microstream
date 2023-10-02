@@ -13,7 +13,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>microstream-ibm-cos</artifactId>
+	<artifactId>microstream-afs-ibm-cos</artifactId>
 	<url>https://microstream.one</url>
 
 	<dependencies>
