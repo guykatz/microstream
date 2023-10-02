@@ -16,26 +16,20 @@
 	<artifactId>microstream-afs-ibm-cos</artifactId>
 	<url>https://microstream.one</url>
 
+	<properties>
+		<ibm.java.sdk.version>2.13.2</ibm.java.sdk.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.ibm.cos</groupId>
 			<artifactId>ibm-cos-java-sdk-core</artifactId>
-			<version>2.13.2</version>
+			<version>${ibm.java.sdk.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.cos</groupId>
 			<artifactId>ibm-cos-java-sdk-s3</artifactId>
-			<version>2.13.2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.ibm.cos</groupId>
-					<artifactId>ibm-cos-java-sdk-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.ibm.cos</groupId>
-					<artifactId>ibm-cos-java-sdk-kms</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>${ibm.java.sdk.version}</version>
 		</dependency>
 
 		<dependency>

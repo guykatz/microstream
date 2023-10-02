@@ -2,7 +2,7 @@ package one.microstream.afs.ibm.cos.types;
 
 /*-
  * #%L
- * microstream-afs-ibm-ocs
+ * microstream-afs-ibm-cos
  * %%
  * Copyright (C) 2019 - 2022 MicroStream Software
  * %%

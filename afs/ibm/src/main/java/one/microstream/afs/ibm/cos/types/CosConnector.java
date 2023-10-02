@@ -2,7 +2,7 @@ package one.microstream.afs.ibm.cos.types;
 
 /*-
  * #%L
- * microstream-afs-ibm-ocs
+ * microstream-afs-ibm-cos
  * %%
  * Copyright (C) 2019 - 2022 MicroStream Software
  * %%
@@ -26,6 +26,7 @@ import com.ibm.cloud.objectstorage.services.s3.model.DeleteObjectsResult;
 import com.ibm.cloud.objectstorage.services.s3.model.GetObjectRequest;
 import com.ibm.cloud.objectstorage.services.s3.model.ListObjectsV2Request;
 import com.ibm.cloud.objectstorage.services.s3.model.ObjectMetadata;
+import com.ibm.cloud.objectstorage.services.s3.model.PutObjectRequest;
 import com.ibm.cloud.objectstorage.services.s3.model.S3ObjectInputStream;
 import com.ibm.cloud.objectstorage.services.s3.model.S3ObjectSummary;
 import one.microstream.afs.blobstore.types.BlobStoreConnector;
@@ -41,7 +42,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
+import java.util.stream.StreamSupport;
 
 
 /**
@@ -97,6 +98,7 @@ public interface CosConnector extends BlobStoreConnector
 	extends    BlobStoreConnector.Abstract<S3ObjectSummary>
 	implements CosConnector
 	{
+		public static final int READ_LIMIT = Integer.MAX_VALUE;
 		private final AmazonS3 s3;
 
 		Default(
@@ -227,12 +229,21 @@ public interface CosConnector extends BlobStoreConnector
 				ByteBufferInputStream.New(sourceBuffers)
 			))
 			{
-				this.s3.putObject(
+				int bufferSum = StreamSupport.stream(sourceBuffers.spliterator(), false).mapToInt(
+					buffer -> buffer.limit()
+				).sum();
+
+				ObjectMetadata objectMetadata = new ObjectMetadata();
+				objectMetadata.setContentLength(bufferSum);
+				PutObjectRequest putObjectRequest = new PutObjectRequest(
 					file.container(),
 					toBlobKey(file, nextBlobNumber),
 					inputStream,
-					new ObjectMetadata()
+					objectMetadata
 				);
+				putObjectRequest.getRequestClientOptions().setReadLimit(READ_LIMIT);
+
+				this.s3.putObject(putObjectRequest);
 			}
 			catch(final IOException e)
 			{
