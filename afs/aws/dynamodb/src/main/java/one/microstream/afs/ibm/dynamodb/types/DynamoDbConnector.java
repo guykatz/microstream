@@ -1,4 +1,4 @@
-package one.microstream.afs.aws.dynamodb.types;
+package one.microstream.afs.ibm.dynamodb.types;
 
 /*-
  * #%L

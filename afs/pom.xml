@@ -33,6 +33,7 @@
 		<module>oraclecloud</module>
 		<module>redis</module>
 		<module>sql</module>
+		<module>ibm</module>
 	</modules>
 
 </project>

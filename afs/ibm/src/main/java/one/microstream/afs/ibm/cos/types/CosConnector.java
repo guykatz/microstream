@@ -1,8 +1,8 @@
-package one.microstream.afs.aws.s3.types;
+package one.microstream.afs.ibm.cos.types;
 
 /*-
  * #%L
- * microstream-afs-aws-s3
+ * microstream-afs-ibm-ocs
  * %%
  * Copyright (C) 2019 - 2022 MicroStream Software
  * %%
@@ -20,6 +20,11 @@ package one.microstream.afs.aws.s3.types;
  * #L%
  */
 
+import one.microstream.afs.blobstore.types.BlobStoreConnector;
+import one.microstream.afs.blobstore.types.BlobStorePath;
+import one.microstream.exceptions.IORuntimeException;
+import one.microstream.io.ByteBufferInputStream;
+
 import static java.util.stream.Collectors.toList;
 import static one.microstream.X.notNull;
 
@@ -30,26 +35,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import one.microstream.afs.blobstore.types.BlobStoreConnector;
-import one.microstream.afs.blobstore.types.BlobStorePath;
-import one.microstream.exceptions.IORuntimeException;
-import one.microstream.io.ByteBufferInputStream;
-import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.core.internal.util.Mimetype;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.Delete;
-import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectsResponse;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
-import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Object;
+
 
 /**
  * Connector for the <a href="https://aws.amazon.com/s3/">Amazon Simple Storage Service (Amazon S3)</a>.
@@ -65,7 +51,7 @@ import software.amazon.awssdk.services.s3.model.S3Object;
  * 
  *
  */
-public interface S3Connector extends BlobStoreConnector
+public interface CosConnector extends BlobStoreConnector
 {
 	/**
 	 * Pseudo-constructor method which creates a new {@link S3Connector}.

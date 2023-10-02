@@ -19,7 +19,7 @@
  */
 module microstream.afs.aws
 {
-	exports one.microstream.afs.aws.types;
+	exports one.microstream.afs.ibm.types;
 	
 	requires transitive microstream.afs;
 	requires transitive microstream.configuration;

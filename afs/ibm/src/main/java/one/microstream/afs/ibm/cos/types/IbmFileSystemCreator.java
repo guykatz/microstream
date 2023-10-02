@@ -1,8 +1,8 @@
-package one.microstream.afs.aws.types;
+package one.microstream.afs.ibm.cos.types;
 
 /*-
  * #%L
- * microstream-afs-aws
+ * microstream-afs-ibm
  * %%
  * Copyright (C) 2019 - 2022 MicroStream Software
  * %%
@@ -20,46 +20,45 @@ package one.microstream.afs.aws.types;
  * #L%
  */
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import com.ibm.cloud.objectstorage.auth.BasicAWSCredentials;
+import com.ibm.cloud.objectstorage.auth.DefaultAWSCredentialsProviderChain;
+import com.ibm.cloud.objectstorage.auth.EnvironmentVariableCredentialsProvider;
+import com.ibm.cloud.objectstorage.auth.SystemPropertiesCredentialsProvider;
 import one.microstream.afs.types.AFileSystem;
 import one.microstream.configuration.exceptions.ConfigurationException;
 import one.microstream.configuration.types.Configuration;
 import one.microstream.configuration.types.ConfigurationBasedCreator;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.SystemPropertyCredentialsProvider;
-import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
-import software.amazon.awssdk.regions.Region;
+import com.ibm.cloud.objectstorage.client.builder.AwsClientBuilder;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-public abstract class AwsFileSystemCreator extends ConfigurationBasedCreator.Abstract<AFileSystem>
+
+public abstract class IbmFileSystemCreator extends ConfigurationBasedCreator.Abstract<AFileSystem>
 {
-	protected AwsFileSystemCreator()
+	protected IbmFileSystemCreator()
 	{
 		super(AFileSystem.class);
 	}
 
 	protected void populateBuilder(
 		final AwsClientBuilder<?, ?> clientBuilder,
-		final Configuration          configuration
+		final Configuration configuration
 	)
 	{
-		configuration.opt("endpoint-override").ifPresent(endpointOverride ->
-		{
-			try
-			{
-				clientBuilder.endpointOverride(new URI(endpointOverride));
-			}
-			catch(final URISyntaxException e)
-			{
-				throw new ConfigurationException(configuration, e);
-			}
-		});
+		//TODO
+//		configuration.opt("endpoint-override").ifPresent(endpointOverride ->
+//		{
+//			try
+//			{
+//				clientBuilder.setEndpointConfiguration(new URI(endpointOverride));
+//			}
+//			catch(final URISyntaxException e)
+//			{
+//				throw new ConfigurationException(configuration, e);
+//			}
+//		});
 		configuration.opt("region").ifPresent(
-			region -> clientBuilder.region(Region.of(region))
+			region -> clientBuilder.setRegion(region)
 		);
 		configuration.opt("credentials.type").ifPresent(credentialsType ->
 		{
@@ -67,21 +66,21 @@ public abstract class AwsFileSystemCreator extends ConfigurationBasedCreator.Abs
 			{
 				case "environment-variables":
 				{
-					clientBuilder.credentialsProvider(EnvironmentVariableCredentialsProvider.create());
+					clientBuilder.setCredentials(new EnvironmentVariableCredentialsProvider());
 				}
 				break;
 
 				case "system-properties":
 				{
-					clientBuilder.credentialsProvider(SystemPropertyCredentialsProvider.create());
+					clientBuilder.setCredentials(new SystemPropertiesCredentialsProvider());
 				}
 				break;
 
 				case "static":
 				{
-					clientBuilder.credentialsProvider(
-						StaticCredentialsProvider.create(
-							AwsBasicCredentials.create(
+					clientBuilder.setCredentials(
+						new com.ibm.cloud.objectstorage.auth.AWSStaticCredentialsProvider(
+							new BasicAWSCredentials(
 								configuration.get("credentials.access-key-id"),
 								configuration.get("credentials.secret-access-key")
 							)
@@ -92,7 +91,7 @@ public abstract class AwsFileSystemCreator extends ConfigurationBasedCreator.Abs
 
 				case "default":
 				{
-					clientBuilder.credentialsProvider(DefaultCredentialsProvider.create());
+					clientBuilder.setCredentials(new DefaultAWSCredentialsProviderChain());
 				}
 				break;
 

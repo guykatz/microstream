@@ -1,8 +1,8 @@
-package one.microstream.afs.aws.s3.types;
+package one.microstream.afs.ibm.dynamodb.types;
 
 /*-
  * #%L
- * microstream-afs-aws-s3
+ * microstream-afs-aws-dynamodb
  * %%
  * Copyright (C) 2019 - 2022 MicroStream Software
  * %%
@@ -20,16 +20,16 @@ package one.microstream.afs.aws.s3.types;
  * #L%
  */
 
-import one.microstream.afs.aws.types.AwsFileSystemCreator;
+import one.microstream.afs.ibm.types.AwsFileSystemCreator;
 import one.microstream.afs.blobstore.types.BlobStoreFileSystem;
 import one.microstream.afs.types.AFileSystem;
 import one.microstream.configuration.types.Configuration;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.S3ClientBuilder;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 
-public class S3FileSystemCreator extends AwsFileSystemCreator
+public class DynamoDbFileSystemCreator extends AwsFileSystemCreator
 {
-	public S3FileSystemCreator()
+	public DynamoDbFileSystemCreator()
 	{
 		super();
 	}
@@ -39,20 +39,20 @@ public class S3FileSystemCreator extends AwsFileSystemCreator
 		final Configuration configuration
 	)
 	{
-		final Configuration s3Configuration = configuration.child("aws.s3");
-		if(s3Configuration == null)
+		final Configuration dynamoConfiguration = configuration.child("aws.dynamodb");
+		if(dynamoConfiguration == null)
 		{
 			return null;
 		}
 		
-		final S3ClientBuilder clientBuilder = S3Client.builder();
-		this.populateBuilder(clientBuilder, s3Configuration);
+		final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder();
+		this.populateBuilder(clientBuilder, dynamoConfiguration);
 		
-		final S3Client    client    = clientBuilder.build();
-		final boolean     cache     = configuration.optBoolean("cache").orElse(true);
-		final S3Connector connector = cache
-			? S3Connector.Caching(client)
-			: S3Connector.New(client)
+		final DynamoDbClient    client    = clientBuilder.build();
+		final boolean           cache     = configuration.optBoolean("cache").orElse(true);
+		final DynamoDbConnector connector = cache
+			? DynamoDbConnector.Caching(client)
+			: DynamoDbConnector.New(client)
 		;
 		return BlobStoreFileSystem.New(connector);
 	}

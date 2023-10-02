@@ -1,8 +1,8 @@
-package one.microstream.afs.aws.dynamodb.types;
+package one.microstream.afs.ibm.cos.types;
 
 /*-
  * #%L
- * microstream-afs-aws-dynamodb
+ * microstream-afs-ibm-ocs
  * %%
  * Copyright (C) 2019 - 2022 MicroStream Software
  * %%
@@ -20,16 +20,16 @@ package one.microstream.afs.aws.dynamodb.types;
  * #L%
  */
 
-import one.microstream.afs.aws.types.AwsFileSystemCreator;
+import one.microstream.afs.ibm.types.AwsFileSystemCreator;
 import one.microstream.afs.blobstore.types.BlobStoreFileSystem;
 import one.microstream.afs.types.AFileSystem;
 import one.microstream.configuration.types.Configuration;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
-public class DynamoDbFileSystemCreator extends AwsFileSystemCreator
+public class CosFileSystemCreator extends AwsFileSystemCreator
 {
-	public DynamoDbFileSystemCreator()
+	public CosFileSystemCreator()
 	{
 		super();
 	}
@@ -39,20 +39,20 @@ public class DynamoDbFileSystemCreator extends AwsFileSystemCreator
 		final Configuration configuration
 	)
 	{
-		final Configuration dynamoConfiguration = configuration.child("aws.dynamodb");
-		if(dynamoConfiguration == null)
+		final Configuration s3Configuration = configuration.child("aws.s3");
+		if(s3Configuration == null)
 		{
 			return null;
 		}
 		
-		final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder();
-		this.populateBuilder(clientBuilder, dynamoConfiguration);
+		final S3ClientBuilder clientBuilder = S3Client.builder();
+		this.populateBuilder(clientBuilder, s3Configuration);
 		
-		final DynamoDbClient    client    = clientBuilder.build();
-		final boolean           cache     = configuration.optBoolean("cache").orElse(true);
-		final DynamoDbConnector connector = cache
-			? DynamoDbConnector.Caching(client)
-			: DynamoDbConnector.New(client)
+		final S3Client    client    = clientBuilder.build();
+		final boolean     cache     = configuration.optBoolean("cache").orElse(true);
+		final S3Connector connector = cache
+			? S3Connector.Caching(client)
+			: S3Connector.New(client)
 		;
 		return BlobStoreFileSystem.New(connector);
 	}

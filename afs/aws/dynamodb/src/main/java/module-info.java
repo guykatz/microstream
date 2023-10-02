@@ -19,10 +19,10 @@
  */
 module microstream.afs.aws.dynamodb
 {
-	exports one.microstream.afs.aws.dynamodb.types;
+	exports one.microstream.afs.ibm.dynamodb.types;
 	
 	provides one.microstream.configuration.types.ConfigurationBasedCreator
-	    with one.microstream.afs.aws.dynamodb.types.DynamoDbFileSystemCreator
+	    with one.microstream.afs.ibm.dynamodb.types.DynamoDbFileSystemCreator
 	;
 	
 	requires transitive microstream.afs.aws;

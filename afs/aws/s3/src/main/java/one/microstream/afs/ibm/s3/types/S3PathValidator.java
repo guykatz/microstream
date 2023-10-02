@@ -1,4 +1,4 @@
-package one.microstream.afs.aws.s3.types;
+package one.microstream.afs.ibm.s3.types;
 
 /*-
  * #%L
