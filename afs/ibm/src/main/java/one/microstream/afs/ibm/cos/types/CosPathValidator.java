@@ -27,13 +27,13 @@ import one.microstream.afs.blobstore.types.BlobStorePath;
 public interface CosPathValidator extends BlobStorePath.Validator
 {
 
-	public static S3PathValidator New()
+	public static CosPathValidator New()
 	{
-		return new S3PathValidator.Default();
+		return new CosPathValidator.Default();
 	}
 
 
-	public static class Default implements S3PathValidator
+	public static class Default implements CosPathValidator
 	{
 		Default()
 		{

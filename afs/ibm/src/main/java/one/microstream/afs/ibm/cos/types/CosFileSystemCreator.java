@@ -20,14 +20,15 @@ package one.microstream.afs.ibm.cos.types;
  * #L%
  */
 
-import one.microstream.afs.ibm.types.AwsFileSystemCreator;
+import com.ibm.cloud.objectstorage.client.builder.AwsClientBuilder;
+import com.ibm.cloud.objectstorage.services.s3.AmazonS3;
+import com.ibm.cloud.objectstorage.services.s3.AmazonS3Client;
+import com.ibm.cloud.objectstorage.services.s3.AmazonS3ClientBuilder;
 import one.microstream.afs.blobstore.types.BlobStoreFileSystem;
 import one.microstream.afs.types.AFileSystem;
 import one.microstream.configuration.types.Configuration;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
-public class CosFileSystemCreator extends AwsFileSystemCreator
+public class CosFileSystemCreator extends IbmFileSystemCreator
 {
 	public CosFileSystemCreator()
 	{
@@ -39,20 +40,20 @@ public class CosFileSystemCreator extends AwsFileSystemCreator
 		final Configuration configuration
 	)
 	{
-		final Configuration s3Configuration = configuration.child("aws.s3");
+		final Configuration s3Configuration = configuration.child("ibm.cos");
 		if(s3Configuration == null)
 		{
 			return null;
 		}
-		
-		final S3ClientBuilder clientBuilder = S3Client.builder();
+
+		final AwsClientBuilder<AmazonS3ClientBuilder, AmazonS3> clientBuilder = AmazonS3Client.builder();
 		this.populateBuilder(clientBuilder, s3Configuration);
 		
-		final S3Client    client    = clientBuilder.build();
-		final boolean     cache     = configuration.optBoolean("cache").orElse(true);
-		final S3Connector connector = cache
-			? S3Connector.Caching(client)
-			: S3Connector.New(client)
+		final AmazonS3 client    = clientBuilder.build();
+		final boolean        cache     = configuration.optBoolean("cache").orElse(true);
+		final CosConnector   connector = cache
+			? CosConnector.Caching(client)
+			: CosConnector.New(client)
 		;
 		return BlobStoreFileSystem.New(connector);
 	}

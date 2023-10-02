@@ -17,20 +17,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  * #L%
  */
-module microstream.afs.ibm.ocs
+module microstream.afs.ibm.cos
 {
 	exports one.microstream.afs.ibm.cos.types;
-	
-	provides one.microstream.configuration.types.ConfigurationBasedCreator
-	    with one.microstream.afs.ibm.cos.types.IbmFileSystemCreator
-	;
 
-	requires transitive software.amazon.awssdk.http;
-	requires transitive software.amazon.awssdk.services.s3;
 	requires microstream.configuration;
 	requires microstream.afs;
 	requires ibm.cos.java.sdk.core;
 	requires ibm.cos.java.sdk;
 	requires ibm.cos.java.sdk.s3;
 	requires ibm.cos.java.sdk.bundle;
+	requires microstream.afs.blobstore;
 }

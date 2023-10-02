@@ -25,12 +25,9 @@ import com.ibm.cloud.objectstorage.auth.DefaultAWSCredentialsProviderChain;
 import com.ibm.cloud.objectstorage.auth.EnvironmentVariableCredentialsProvider;
 import com.ibm.cloud.objectstorage.auth.SystemPropertiesCredentialsProvider;
 import one.microstream.afs.types.AFileSystem;
-import one.microstream.configuration.exceptions.ConfigurationException;
 import one.microstream.configuration.types.Configuration;
 import one.microstream.configuration.types.ConfigurationBasedCreator;
 import com.ibm.cloud.objectstorage.client.builder.AwsClientBuilder;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 
 public abstract class IbmFileSystemCreator extends ConfigurationBasedCreator.Abstract<AFileSystem>

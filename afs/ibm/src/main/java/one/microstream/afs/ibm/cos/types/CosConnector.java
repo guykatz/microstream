@@ -20,12 +20,19 @@ package one.microstream.afs.ibm.cos.types;
  * #L%
  */
 
+import com.ibm.cloud.objectstorage.services.s3.AmazonS3;
+import com.ibm.cloud.objectstorage.services.s3.model.DeleteObjectsRequest;
+import com.ibm.cloud.objectstorage.services.s3.model.DeleteObjectsResult;
+import com.ibm.cloud.objectstorage.services.s3.model.GetObjectRequest;
+import com.ibm.cloud.objectstorage.services.s3.model.ListObjectsV2Request;
+import com.ibm.cloud.objectstorage.services.s3.model.ObjectMetadata;
+import com.ibm.cloud.objectstorage.services.s3.model.S3ObjectInputStream;
+import com.ibm.cloud.objectstorage.services.s3.model.S3ObjectSummary;
 import one.microstream.afs.blobstore.types.BlobStoreConnector;
 import one.microstream.afs.blobstore.types.BlobStorePath;
 import one.microstream.exceptions.IORuntimeException;
 import one.microstream.io.ByteBufferInputStream;
 
-import static java.util.stream.Collectors.toList;
 import static one.microstream.X.notNull;
 
 import java.io.BufferedInputStream;
@@ -44,7 +51,7 @@ import java.util.stream.Stream;
  * <pre>
  * S3Client client = ...
  * BlobStoreFileSystem fileSystem = BlobStoreFileSystem.New(
- * 	S3Connector.Caching(client)
+ * 	CosConnector.Caching(client)
  * );
  * </pre>
  *
@@ -54,32 +61,32 @@ import java.util.stream.Stream;
 public interface CosConnector extends BlobStoreConnector
 {
 	/**
-	 * Pseudo-constructor method which creates a new {@link S3Connector}.
+	 * Pseudo-constructor method which creates a new {@link CosConnector}.
 	 *
 	 * @param s3 connection to the S3 storage
-	 * @return a new {@link S3Connector}
+	 * @return a new {@link CosConnector}
 	 */
-	public static S3Connector New(
-		final S3Client s3
+	public static CosConnector New(
+		final AmazonS3 s3
 	)
 	{
-		return new S3Connector.Default(
+		return new CosConnector.Default(
 			notNull(s3),
 			false
 		);
 	}
 	
 	/**
-	 * Pseudo-constructor method which creates a new {@link S3Connector} with cache.
+	 * Pseudo-constructor method which creates a new {@link CosConnector} with cache.
 	 *
 	 * @param s3 connection to the S3 storage
-	 * @return a new {@link S3Connector}
+	 * @return a new {@link CosConnector}
 	 */
-	public static S3Connector Caching(
-		final S3Client s3
+	public static CosConnector Caching(
+		final AmazonS3 s3
 	)
 	{
-		return new S3Connector.Default(
+		return new CosConnector.Default(
 			notNull(s3),
 			true
 		);
@@ -87,39 +94,38 @@ public interface CosConnector extends BlobStoreConnector
 
 
 	public static class Default
-	extends    BlobStoreConnector.Abstract<S3Object>
-	implements S3Connector
+	extends    BlobStoreConnector.Abstract<S3ObjectSummary>
+	implements CosConnector
 	{
-		private final S3Client s3;
+		private final AmazonS3 s3;
 
 		Default(
-			final S3Client s3      ,
+			final AmazonS3 s3      ,
 			final boolean  useCache
 		)
 		{
 			super(
-				S3Object::key,
-				S3Object::size,
-				S3PathValidator.New(),
+				S3ObjectSummary::getKey,
+				S3ObjectSummary::getSize,
+				CosPathValidator.New(),
 				useCache
 			);
 			this.s3 = s3;
 		}
 
 		@Override
-		protected Stream<S3Object> blobs(final BlobStorePath file)
+		protected Stream<S3ObjectSummary> blobs(final BlobStorePath file)
 		{
 			final String  prefix  = toBlobKeyPrefix(file);
 			final Pattern pattern = Pattern.compile(blobKeyRegex(prefix));
-			final ListObjectsV2Request request = ListObjectsV2Request
-                .builder()
-                .bucket(file.container())
-                .prefix(prefix)
-                .build();
+			final ListObjectsV2Request request = new ListObjectsV2Request()
+                .withBucketName(file.container())
+                .withPrefix(prefix)
+            ;
 			return this.s3.listObjectsV2(request)
-				.contents()
+				.getObjectSummaries()
 				.stream()
-				.filter(obj -> pattern.matcher(obj.key()).matches())
+				.filter(obj -> pattern.matcher(obj.getKey()).matches())
 				.sorted(this.blobComparator())
 			;
 		}
@@ -129,36 +135,39 @@ public interface CosConnector extends BlobStoreConnector
 			final BlobStorePath directory
 		)
 		{
-			final ListObjectsV2Request request = ListObjectsV2Request
-                .builder()
-                .bucket(directory.container())
-                .prefix(toChildKeysPrefix(directory))
-                .delimiter(BlobStorePath.SEPARATOR)
-                .build();
+			final ListObjectsV2Request request = new ListObjectsV2Request()
+				.withBucketName(directory.container())
+				.withPrefix(toChildKeysPrefix(directory))
+				.withDelimiter(BlobStorePath.SEPARATOR)
+			;
 			return this.s3.listObjectsV2(request)
-				.contents()
+				.getObjectSummaries()
 				.stream()
-				.map(S3Object::key)
+				.map(S3ObjectSummary::getKey)
 			;
 		}
 
 		@Override
 		protected void internalReadBlobData(
-			final BlobStorePath file        ,
-			final S3Object      blob        ,
-			final ByteBuffer    targetBuffer,
-			final long          offset      ,
-			final long          length
+			final BlobStorePath   file        ,
+			final S3ObjectSummary blob        ,
+			final ByteBuffer      targetBuffer,
+			final long            offset      ,
+			final long            length
 		)
 		{
-			final GetObjectRequest request = GetObjectRequest.builder()
-				.bucket(file.container())
-				.key(blob.key())
-				.range("bytes=" + offset + "-" + (offset + length - 1))
-				.build()
-			;
-			final ResponseBytes<GetObjectResponse> response = this.s3.getObjectAsBytes(request);
-			targetBuffer.put(response.asByteBuffer());
+			final GetObjectRequest request = new GetObjectRequest(file.container(), blob.getKey())
+				.withRange(offset, offset + length - 1);
+			S3ObjectInputStream result = this.s3.getObject(request).getObjectContent();
+			try
+			{
+				targetBuffer.put(result.readAllBytes());
+			}
+			catch(IOException e)
+			{
+				//TODO: Is this correct? What is the usual behavior?
+				throw new RuntimeException(e);
+			}
 		}
 
 		@Override
@@ -166,20 +175,8 @@ public interface CosConnector extends BlobStoreConnector
 			final BlobStorePath directory
 		)
 		{
-			try
-			{
-				final HeadObjectRequest request = HeadObjectRequest.builder()
-					.bucket(directory.container())
-					.key(toContainerKey(directory))
-					.build()
-				;
-				this.s3.headObject(request);
-				return true;
-			}
-			catch(final NoSuchKeyException e)
-			{
-				return false;
-			}
+			this.s3.doesObjectExist(directory.container(),toContainerKey(directory));
+			return true;
 		}
 		
 		@Override
@@ -187,14 +184,7 @@ public interface CosConnector extends BlobStoreConnector
 			final BlobStorePath file
 		)
 		{
-			try
-			{
-				return super.internalFileExists(file);
-			}
-			catch(final NoSuchBucketException e)
-			{
-				return false;
-			}
+			return super.internalFileExists(file);
 		}
 
 		@Override
@@ -202,13 +192,7 @@ public interface CosConnector extends BlobStoreConnector
 			final BlobStorePath directory
 		)
 		{
-			final PutObjectRequest request = PutObjectRequest.builder()
-				.bucket(directory.container())
-				.key(toContainerKey(directory))
-				.build()
-			;
-			final RequestBody body = RequestBody.empty();
-			this.s3.putObject(request, body);
+			this.s3.putObject(directory.container(), toContainerKey(directory), "");
 			
 			return true;
 		}
@@ -216,20 +200,18 @@ public interface CosConnector extends BlobStoreConnector
 		@Override
 		protected boolean internalDeleteBlobs(
 			final BlobStorePath            file,
-			final List<? extends S3Object> blobs
+			final List<? extends S3ObjectSummary> blobs
 		)
 		{
-			final List<ObjectIdentifier> objects = blobs.stream()
-				.map(obj -> ObjectIdentifier.builder().key(obj.key()).build())
-				.collect(toList())
+			final String[] objects = blobs.stream()
+				.map(S3ObjectSummary::getKey)
+				.toArray(String[]::new)
 			;
-			final DeleteObjectsRequest request = DeleteObjectsRequest.builder()
-				.bucket(file.container())
-				.delete(Delete.builder().objects(objects).build())
-				.build()
+			final DeleteObjectsRequest request = new DeleteObjectsRequest(file.container())
+				.withKeys(objects)
 			;
-			final DeleteObjectsResponse response = this.s3.deleteObjects(request);
-			return response.deleted().size() == blobs.size();
+			final DeleteObjectsResult response = this.s3.deleteObjects(request);
+			return response.getDeletedObjects().size() == blobs.size();
 		}
 
 		@Override
@@ -241,23 +223,16 @@ public interface CosConnector extends BlobStoreConnector
 			final long nextBlobNumber = this.nextBlobNumber(file);
 			final long totalSize      = this.totalSize(sourceBuffers);
 
-			final PutObjectRequest request = PutObjectRequest.builder()
-				.bucket(file.container())
-				.key(toBlobKey(file, nextBlobNumber))
-				.build()
-			;
-			
 			try(final BufferedInputStream inputStream = new BufferedInputStream(
 				ByteBufferInputStream.New(sourceBuffers)
 			))
 			{
-				final RequestBody body = RequestBody.fromContentProvider(
-					() -> inputStream,
-					totalSize,
-					Mimetype.MIMETYPE_OCTET_STREAM
+				this.s3.putObject(
+					file.container(),
+					toBlobKey(file, nextBlobNumber),
+					inputStream,
+					new ObjectMetadata()
 				);
-				
-				this.s3.putObject(request, body);
 			}
 			catch(final IOException e)
 			{

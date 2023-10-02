@@ -18,23 +18,9 @@
 	<url>https://microstream.one</url>
 
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/com.ibm.cos/ibm-cos-java-sdk -->
 		<dependency>
 			<groupId>com.ibm.cos</groupId>
 			<artifactId>ibm-cos-java-sdk</artifactId>
-			<version>2.13.2</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.ibm.cos/ibm-cos-java-sdk-bom -->
-		<dependency>
-			<groupId>com.ibm.cos</groupId>
-			<artifactId>ibm-cos-java-sdk-bom</artifactId>
-			<version>2.13.2</version>
-			<type>pom</type>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.ibm.cos/ibm-cos-java-sdk-bundle -->
-		<dependency>
-			<groupId>com.ibm.cos</groupId>
-			<artifactId>ibm-cos-java-sdk-bundle</artifactId>
 			<version>2.13.2</version>
 		</dependency>
 		<dependency>
