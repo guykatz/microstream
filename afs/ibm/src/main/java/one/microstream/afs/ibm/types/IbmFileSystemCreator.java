@@ -1,4 +1,4 @@
-package one.microstream.afs.ibm.cos.types;
+package one.microstream.afs.ibm.types;
 
 /*-
  * #%L

@@ -25,6 +25,7 @@ import com.ibm.cloud.objectstorage.services.s3.AmazonS3;
 import com.ibm.cloud.objectstorage.services.s3.AmazonS3Client;
 import com.ibm.cloud.objectstorage.services.s3.AmazonS3ClientBuilder;
 import one.microstream.afs.blobstore.types.BlobStoreFileSystem;
+import one.microstream.afs.ibm.types.IbmFileSystemCreator;
 import one.microstream.afs.types.AFileSystem;
 import one.microstream.configuration.types.Configuration;
 

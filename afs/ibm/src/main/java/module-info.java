@@ -21,11 +21,12 @@ module microstream.afs.ibm.cos
 {
 	exports one.microstream.afs.ibm.cos.types;
 
+	provides one.microstream.configuration.types.ConfigurationBasedCreator
+		with one.microstream.afs.ibm.cos.types.CosFileSystemCreator;
+
 	requires microstream.configuration;
 	requires microstream.afs;
-	requires ibm.cos.java.sdk.core;
-	requires ibm.cos.java.sdk;
-	requires ibm.cos.java.sdk.s3;
-	requires ibm.cos.java.sdk.bundle;
 	requires microstream.afs.blobstore;
+	requires ibm.cos.java.sdk.core;
+	requires ibm.cos.java.sdk.s3;
 }
