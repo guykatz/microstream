@@ -104,7 +104,15 @@ public interface StorageRestClientJersey extends StorageRestClient
 			{
 				final ClientBuilder clientBuilder = ClientBuilder.newBuilder()
 					.register(GsonReader.class);
-				
+				//check if HTTP basic auth is needed.
+				//the indication of weather or not its needed is the presence of 'username' and 'password' as system properties (usually added in the command as -D parameters)
+				//example run line:
+				//java -jar -Dusername=usr -Dpassword=pwd microstream-storage-restclient-app-08.01.01-MS-GA.jar --server.port=8888
+				String username = System.getProperty("username");
+				String password = System.getProperty("password");
+				if(username!=null && password!=null){
+					clientBuilder.register(new BasicAuth(username, password));
+				}
 				if(this.clientCustomizer != null)
 				{
 					this.clientCustomizer.accept(clientBuilder);
